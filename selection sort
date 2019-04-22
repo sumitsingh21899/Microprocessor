@@ -1,0 +1,34 @@
+.model small 
+        .stack 64 
+        .data 
+a db 44h,11h,22h,66h 
+si_ze dw $-a            ;si_ze=4 
+nc dw ?                 ;total no of comparisions made 
+        .code 
+selsort: 
+        mov ax,@data 
+        mov ds,ax 
+        mov dx,si_ze    ;in selsort for n elements to sort we need n-1 passes 
+        dec dx          ;dx=3 no of passes required 
+        mov nc,0 
+outlup: 
+        mov cx,dx       ;cx=no of comparisions to be performed in a pass 
+        mov si,0 
+        mov ah,a[si] 
+        mov bx,si 
+inlup: 
+        inc si 
+        inc nc 
+        cmp ah,a[si] 
+        jb go_on 
+        mov ah,a[si]    ;ah=smallest element in the vector 
+        mov bx,si       ;bx=position of the smallest element 
+go_on: 
+        loop inlup      ;untill cx=0 
+        xchg ah,a[si]   ;xchg the last element pointed by si,with the 
+        mov a[bx],ah    ;smallest element pointed by bx 
+        dec dx 
+        jnz outlup 
+        int 3           ;breakpoint interrupt 
+        align 16 
+end selsort
