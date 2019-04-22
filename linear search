@@ -1,0 +1,36 @@
+.model small 
+        .stack 64 
+        .data 
+array db 55h,33h,44h,66h,22h 
+len dw $-array  ;length=5 
+scrkey equ 33h 
+asc1 equ (scrkey/10h)+'0'       ;asc1='3' 
+asc2 equ (scrkey mod 10h)+'0'   ;asc2='5' 
+sucmsg db 'Element ',asc1,asc2,' found at position:' 
+result db ?,0ch,0ah,'$' 
+failmsg db 'Element ',asc1,asc2,' Not found',0ch,0ah,'$' 
+        .code 
+lin: 
+        mov ax,@data 
+        mov ds,ax 
+        mov es,ax 
+        cld     ;direction flag D=0 
+        mov di,0        ;di=0,autoincrement di 
+        mov al,scrkey   ;al=35 
+        mov cx,len 
+        repne scasb     ;scasb==>[al]-[[di]] 
+        jz success 
+        lea dx,failmsg 
+        jmp display 
+success: 
+        mov bx,di       ;bx=position of the scrkey found in array 
+        add bl,'0'      ;convert this position into ascii for display purpose 
+        mov result,bl 
+        lea dx,sucmsg 
+display: 
+        mov ah,09h 
+        int 21h 
+        mov ah,4ch 
+        int 21h 
+        align 16 
+end lin
