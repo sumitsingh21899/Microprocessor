@@ -1,0 +1,58 @@
+.model small 
+        .stack 64 
+        .data 
+cr equ 13 
+lf equ 10 
+array dw 1122h,2345h,3344h,4455h,5566h 
+len dw ($-array)/2      ;length=5 
+scrkey equ 2345h 
+asc1 equ (scrkey/1000h)+'0'       ;asc1='2' 
+asc2 equ (scrkey/100h) mod 10h + '0'    ;asc2='3' 
+asc3 equ (scrkey/10h) mod 10h " '0'     ;asc3='4' 
+asc4 equ (scrkey mod 10h) + '0'         ;asc4='5' 
+sucmsg db 'Given Element ' 
+       db ' Found at position:' 
+result db ?,cr,lf,'$' 
+failmsg db 'Given Element ' 
+        db ' Not found',cr,lf,'$' 
+        .code 
+binscr: 
+        mov ax,@data 
+        mov ds,ax 
+        mov bx,1 
+        mov dx,len      ;dx=5 
+        mov cx,scrkey   ;cx=2345 
+again: 
+        cmp bx,dx 
+        ja failure 
+        mov ax,bx 
+        add ax,dx 
+        shr ax,1 
+        mov si,ax 
+        dec si 
+        add si,si 
+        cmp cx,array[si] 
+        jae biger 
+        dec ax 
+        mov dx,ax 
+        jmp again 
+biger: 
+        je success 
+        inc ax 
+        mov bx,ax 
+        jmp again 
+success: 
+        add al,'0' 
+        mov result,al 
+        lea dx,sucmsg 
+        jmp display 
+failure: 
+        lea dx,failmsg 
+display: 
+        mov ah,09h 
+        int 21h 
+quit: 
+        mov ah,4ch 
+        int 21h 
+        align 16 
+end binscr 
