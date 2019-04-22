@@ -1,0 +1,45 @@
+.model small 
+        .stack 64 
+        .data 
+n db 4 
+r db 2 
+res db ? 
+        .code 
+main: 
+        mov ax,@data 
+        mov ds,ax 
+        mov al,n 
+        mov bl,r 
+        call ncr 
+        int 3
+
+ncr proc 
+        cmp al,bl    ;if n=r then ncr=1 
+        je p8 
+        cmp bl,0     ;if r=0 then ncr=1 
+        je p8 
+        cmp bl,1     ;if r=1 then ncr=n 
+        je p10 
+        dec al       ;n-1 
+        cmp bl,al    ;if r=n-1 then ncr=n 
+        je p9 
+        push ax      ;(n-1)Cr 
+        push bx      ; 
+        call ncr     ; 
+        pop bx 
+        pop ax 
+        dec bl       ; 
+        push ax      ; 
+        push bx      ; 
+        call ncr     ;(n-1)C(r-1) 
+        pop bx 
+        pop ax 
+        ret 
+p8:     inc res 
+        ret 
+p9:     inc res 
+p10:    add res,al 
+        ret 
+        align 16 
+ncr endp 
+end main
