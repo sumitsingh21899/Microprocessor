@@ -1,0 +1,31 @@
+.model small 
+        .stack 64 
+        .data 
+values dw 0025,0015 
+lcm dw 2 dup(?) 
+        .code 
+l_c_m: 
+        mov ax,@data 
+        mov ds,ax 
+        mov dx,0 
+        mov ax,values   ;dx_ax=25 
+        mov bx,values+2 ;bx=15 
+again: 
+        push ax 
+        push dx 
+        div bx 
+        cmp dx,0        ;remainder of the division is stored in dx 
+        je exit 
+        pop dx 
+        pop ax 
+        add ax,values 
+        jnc noincdx 
+        inc dx 
+noincdx: 
+        jmp again 
+exit: 
+        pop lcm+2 
+        pop lcm 
+        int 3 
+        align 16 
+end l_c_m 
